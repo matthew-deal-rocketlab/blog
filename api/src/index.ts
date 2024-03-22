@@ -1,25 +1,26 @@
 // src/server.ts
-import express from "express";
-import cors from "cors";
+import express from 'express'
+import cors from 'cors'
+import verifyToken from './middleware/verifyToken'
 
-import { mainRoutes } from "./routes/mainRoutes";
-import { postRoutes } from "./routes/postRoutes";
+import { adminRoutes } from './routes/adminRoutes'
+import { authRoutes } from './routes/authRoutes'
+import { publicRoutes } from './routes/publicRoutes'
 
-import { loggerMiddleware } from "./middleware/logger";
+const app = express()
 
-const app = express();
-const PORT = 3001;
+const PORT = 3001
 
 // Middleware
-app.use(cors());
-app.use(express.json()); // for parsing application/json
-app.use(loggerMiddleware); // Use the logger middleware
+app.use(cors())
+app.use(express.json())
 
 // Routes
 
-app.use(mainRoutes);
-app.use("/api", postRoutes);
+app.use('/api', authRoutes)
+app.use('/api', publicRoutes)
+app.use('/api', verifyToken, adminRoutes)
 
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
-});
+  console.log(`Server is running at http://localhost:${PORT}`)
+})
