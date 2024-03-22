@@ -2,14 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 
-export async function createPost(title: string, content: string) {
+export async function createPost(
+  title: string,
+  content: string,
+  sub_title: string
+) {
   try {
     const response = await fetch("http://localhost:3001/api/posts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, content }),
+      body: JSON.stringify({ title, content, sub_title }),
     });
 
     if (!response.ok) {
@@ -44,14 +48,19 @@ export async function deletePost(id: number) {
   }
 }
 
-export async function updatePost(id: number, title: string, content: string) {
+export async function updatePost(
+  id: number,
+  title: string,
+  content: string,
+  sub_title: string
+) {
   try {
     const response = await fetch(`http://localhost:3001/api/posts/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, content }),
+      body: JSON.stringify({ title, content, sub_title }),
     });
 
     if (!response.ok) {

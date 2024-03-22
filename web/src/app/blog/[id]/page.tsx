@@ -20,7 +20,8 @@ export default async function Page({ params }: { params: { id: number } }) {
     <article className="p-24">
       <div className="max-w-2xl mx-auto flex flex-col justify-center">
         <h1 className="text-5xl font-medium">{post.title}</h1>
-        <p className="text-[12px] text-black text-opacity-75 my-2">
+        <h2 className="text-2xl font-medium mt-2">{post.sub_title}</h2>
+        <p className="text-[12px] text-black text-opacity-75 mb-8">
           Created at: {formattedDate}
         </p>
         <div

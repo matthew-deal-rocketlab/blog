@@ -5,6 +5,7 @@ import { marked } from "marked";
 interface Post {
   id: number;
   title: string;
+  sub_title: string;
   content: string;
   created_at: string;
 }
@@ -65,15 +66,15 @@ postRoutes.get("/posts/:id", async (req, res) => {
 
 // Create a new post
 postRoutes.post("/posts", async (req, res) => {
-  const { title, content } = req.body;
-  if (!title || !content) {
+  const { title, content, sub_title } = req.body;
+  if (!title || !content || !sub_title) {
     return res.status(400).send("Missing title or content");
   }
 
   try {
     const { rows } = await pool.query(
-      "INSERT INTO posts (title, content) VALUES ($1, $2) RETURNING *;",
-      [title, content]
+      "INSERT INTO posts (title, content, sub_title) VALUES ($1, $2, $3) RETURNING *;",
+      [title, content, sub_title]
     );
 
     const newPost = rows[0];
@@ -109,7 +110,7 @@ postRoutes.delete("/posts/:id", async (req, res) => {
 // Update a post
 postRoutes.put("/posts/:id", async (req, res) => {
   const postId = parseInt(req.params.id);
-  const { title, content } = req.body;
+  const { title, content, sub_title } = req.body;
 
   try {
     const fetchRes = await pool.query("SELECT * FROM posts WHERE id = $1;", [
@@ -122,7 +123,7 @@ postRoutes.put("/posts/:id", async (req, res) => {
 
     const { rows } = await pool.query(
       "UPDATE posts SET title = $1, content = $2 WHERE id = $3 RETURNING *;",
-      [title, content, postId]
+      [title, content, postId, sub_title]
     );
 
     res.json(rows[0]);

@@ -18,6 +18,7 @@ import {
 
 const PostSchema = z.object({
   title: z.string().min(1, "Title is required"),
+  sub_title: z.string().min(1, "Sub Title is required"),
   content: z.string().min(1, "Content is required"),
 });
 
@@ -26,17 +27,19 @@ export default function PostForm() {
     resolver: zodResolver(PostSchema),
     defaultValues: {
       title: "",
+      sub_title: "",
       content: "",
     },
   });
 
   const handleSubmit = async (formData: z.infer<typeof PostSchema>) => {
     const title = formData.title as string;
+    const sub_title = formData.sub_title as string;
     const content = formData.content as string;
     const result = PostSchema.safeParse(formData);
 
     if (result.success) {
-      await createPost(title, content);
+      await createPost(title, content, sub_title);
       form.reset();
     }
 
@@ -49,13 +52,27 @@ export default function PostForm() {
         onSubmit={form.handleSubmit(handleSubmit)}
         className="flex flex-col gap-2 mt-8"
       >
+        <h1 className="text-2xl font-semibold">Write a Blog</h1>
+
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input className="mt-8" placeholder="Title" {...field} />
+                <Input placeholder="Title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="sub_title"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="Sub Title" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -70,7 +87,7 @@ export default function PostForm() {
                 <Textarea
                   {...field}
                   placeholder="Create content using Markdown, and the BE will do some magic!"
-                  rows={20}
+                  rows={30}
                 />
               </FormControl>
               <FormMessage />
@@ -78,7 +95,7 @@ export default function PostForm() {
           )}
         />
 
-        <Button className="mt-8">Create Post</Button>
+        <Button className="my-8">Create Post</Button>
       </form>
     </Form>
   );
