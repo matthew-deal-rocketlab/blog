@@ -1,6 +1,7 @@
 import PostForm from '@/components/posts/Form'
 import Posts from '@/components/posts/posts'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cookieStoreGet } from '@/utils/cookie-store'
 import { Suspense } from 'react'
 
 export type Post = {
@@ -12,7 +13,14 @@ export type Post = {
 }
 
 export default async function Page() {
-  const res = await fetch('http://localhost:3001/api/posts')
+  const token = await cookieStoreGet('JWT_TOKEN')
+
+  const res = await fetch('http://localhost:3001/api/my-posts', {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
 
   if (!res.ok) {
     return <div>Failed to load</div>

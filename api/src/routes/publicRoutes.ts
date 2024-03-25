@@ -1,19 +1,12 @@
 import { Router } from 'express'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
+import { Post } from '../types/postTypes'
 const pool = require('../db')
-
-interface Post {
-  id: number
-  title: string
-  sub_title: string
-  content: string
-  created_at: string
-}
 
 export const publicRoutes = Router()
 
-const sanitizeOptions = {
+export const sanitizeOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,

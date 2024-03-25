@@ -26,7 +26,7 @@ export default function Posts({ title, sub_title, id, created_at }: Post) {
         <div className="w-full">
           <h1 className="mt-4 text-xl font-semibold">{title}</h1>
           <h2 className="mb-4 text-base font-medium">{sub_title}</h2>
-          <p className="mt-2 text-[12px] text-black text-opacity-75">Created at: {formattedDate}</p>
+          <p className="mt-2 text-[12px] text-opacity-75">Created at: {formattedDate}</p>
         </div>
       </div>
     </>

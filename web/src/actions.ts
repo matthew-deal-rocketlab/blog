@@ -1,19 +1,24 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { UseFetch } from './hooks/useFetch'
 
-export async function createPost(title: string, content: string, sub_title: string) {
+export async function createPost(
+  title: string,
+  content: string,
+  sub_title: string,
+  user_id: number,
+) {
   try {
-    const response = await fetch('http://localhost:3001/api/posts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ title, content, sub_title }),
+    const response = await UseFetch('http://localhost:3001/api/posts', 'POST', {
+      title,
+      content,
+      sub_title,
+      user_id,
     })
 
     if (!response.ok) {
-      return { message: 'Failed to create post.' }
+      return { message: response.statusText }
     }
 
     revalidatePath('/')
@@ -27,8 +32,8 @@ export async function createPost(title: string, content: string, sub_title: stri
 
 export async function deletePost(id: number) {
   try {
-    const response = await fetch(`http://localhost:3001/api/posts/${id}`, {
-      method: 'DELETE',
+    const response = await UseFetch(`http://localhost:3001/api/posts/${id}`, 'DELETE', {
+      id,
     })
 
     if (!response.ok) {
@@ -46,12 +51,10 @@ export async function deletePost(id: number) {
 
 export async function updatePost(id: number, title: string, content: string, sub_title: string) {
   try {
-    const response = await fetch(`http://localhost:3001/api/posts/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ title, content, sub_title }),
+    const response = await UseFetch(`http://localhost:3001/api/posts/${id}`, 'PUT', {
+      title,
+      content,
+      sub_title,
     })
 
     if (!response.ok) {

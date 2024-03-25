@@ -3,9 +3,14 @@ import { Post } from './admin/page'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Suspense } from 'react'
+import { useAuth } from '@/context/authProvider'
+import Section from '@/components/ui/section'
+import Grid from '@/components/ui/grid'
 
 export default async function Page() {
-  const res = await fetch('http://localhost:3001/api/posts')
+  const res = await fetch('http://localhost:3001/api/posts', { cache: 'no-cache' })
+
+  console.log(res)
 
   if (!res.ok) {
     return <div>Failed to load</div>
@@ -29,14 +34,14 @@ export default async function Page() {
             <Skeleton className="mt-8 h-10 w-full" />
           </>
         }>
-        <div className="flex flex-col gap-4">
+        <Section description="Blog Posts" className="flex flex-col gap-4">
           {data.length > 0 && (
             <div className="flex flex-col">
               <h1 className="text-3xl font-semibold">Posts </h1>
               <p className="text-sm">number of posts: {data.length}</p>
             </div>
           )}
-          <div className=" flex flex-row">
+          <Grid cols={4} className="grid-cols-2 md:grid-cols-4">
             {data.length === 0 ? (
               <div className="text-xl font-semibold ">No posts available</div>
             ) : (
@@ -51,8 +56,8 @@ export default async function Page() {
                 />
               ))
             )}
-          </div>
-        </div>
+          </Grid>
+        </Section>
       </Suspense>
     </main>
   )

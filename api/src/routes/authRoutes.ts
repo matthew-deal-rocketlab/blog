@@ -9,6 +9,10 @@ export type User = {
   password: string
 }
 
+interface CreateUserError extends Error {
+  code: string
+}
+
 export const authRoutes = Router()
 
 const hashPassword = async (password: string): Promise<string> => {
@@ -16,22 +20,28 @@ const hashPassword = async (password: string): Promise<string> => {
   return bcrypt.hash(password, saltRounds)
 }
 
-authRoutes.post('/register', async (req: Request, res: Response) => {
+authRoutes.post('/register', async (req, res) => {
   const { email, password } = req.body
   const hashedPassword = await hashPassword(password)
 
   try {
-    const { rows } = await pool.query(
+    const result = await pool.query(
       'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *;',
       [email, hashedPassword],
     )
-    res.json(rows[0])
-  } catch (error) {
+
+    // If the user was successfully inserted, return the user data
+    res.json(result.rows[0])
+  } catch (error: any) {
+    // Check if the error message indicates a duplicate key violation
+    if (error.message.includes('duplicate key value')) {
+      return res.status(409).json({ error: 'User already exists' })
+    }
+
     console.error(error)
-    res.status(500).send('Error creating new user')
+    res.status(500).json({ error: 'Error creating new user' })
   }
 })
-
 authRoutes.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body
 
@@ -39,18 +49,18 @@ authRoutes.post('/login', async (req: Request, res: Response) => {
     const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email])
 
     if (rows.length === 0) {
-      return res.status(404).send('Wrong email or password')
+      return res.status(404).json({ error: 'Wrong email or password' })
     }
 
     const user = rows[0]
     const validPassword = await bcrypt.compare(password, user.password)
 
     if (!validPassword) {
-      return res.status(400).send('Wrong email or password')
+      return res.status(400).json({ error: 'Wrong email or password' })
     }
 
     if (!process.env.JWT_SECRET_KEY) {
-      return res.status(500).send('Internal Server Error: JWT Secret Key not set')
+      return res.status(500).json({ error: 'Internal Server Error: JWT Secret Key not set' })
     }
 
     const token = jwt.sign(
@@ -65,6 +75,6 @@ authRoutes.post('/login', async (req: Request, res: Response) => {
     res.json({ token })
   } catch (error) {
     console.error(error)
-    res.status(500).send('Error during login')
+    res.status(500).json({ error: 'Error during login' })
   }
 })

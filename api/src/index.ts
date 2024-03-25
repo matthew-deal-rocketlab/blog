@@ -6,6 +6,7 @@ import verifyToken from './middleware/verifyToken'
 import { adminRoutes } from './routes/adminRoutes'
 import { authRoutes } from './routes/authRoutes'
 import { publicRoutes } from './routes/publicRoutes'
+import { userRoutes } from './routes/userRoutes'
 
 const app = express()
 
@@ -20,6 +21,7 @@ app.use(express.json())
 app.use('/api', authRoutes)
 app.use('/api', publicRoutes)
 app.use('/api', verifyToken, adminRoutes)
+app.use('/api', verifyToken, userRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`)
