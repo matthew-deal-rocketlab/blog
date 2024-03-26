@@ -23,6 +23,8 @@ import { cookieStoreSet } from '@/utils/cookie-store'
 import { KEY_JWT_TOKEN } from '@/contstants'
 import { UseFetch } from '@/hooks/useFetch'
 import { useState } from 'react'
+import { login } from '@/actions'
+import { useAuth } from '@/context/authProvider'
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -34,6 +36,7 @@ export default function Page() {
     error: '',
   })
   const { push } = useRouter()
+  const { login: loginProvider } = useAuth()
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -47,31 +50,14 @@ export default function Page() {
     const { email, password } = data
 
     try {
-      const res = await UseFetch(
-        'http://localhost:3001/api/login',
-        'POST',
-        { email, password },
-        false,
-      )
+      const { token, message } = await login(email, password)
 
-      if (!res.ok) {
-        setAlert({ error: 'Something went wrong' })
-        return
+      if (token) {
+        loginProvider(token)
+        push('/')
+      } else if (message) {
+        setAlert({ error: message })
       }
-
-      const response = await res.json()
-
-      if ('error' in response) {
-        console.error(response.error)
-        setAlert({ error: response.error })
-        return
-      }
-
-      const { token } = await response
-
-      cookieStoreSet(KEY_JWT_TOKEN, token)
-
-      push('/')
     } catch (error) {
       console.error(error)
     }

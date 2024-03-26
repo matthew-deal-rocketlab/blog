@@ -1,14 +1,13 @@
 'use client'
 
 import { useAuth } from '@/context/authProvider'
-import { cookieStoreRemove } from '@/utils/cookie-store'
 import Link from 'next/link'
 
 export default function Nav() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, logout } = useAuth()
 
   const handleLogout = async () => {
-    cookieStoreRemove('JWT_TOKEN')
+    logout()
   }
 
   return (

@@ -1,7 +1,7 @@
 import PostForm from '@/components/posts/Form'
 import Posts from '@/components/posts/posts'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cookieStoreGet } from '@/utils/cookie-store'
+import { UseFetch } from '@/hooks/useFetch'
 import { Suspense } from 'react'
 
 export type Post = {
@@ -13,14 +13,13 @@ export type Post = {
 }
 
 export default async function Page() {
-  const token = await cookieStoreGet('JWT_TOKEN')
-
-  const res = await fetch('http://localhost:3001/api/my-posts', {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const res = await UseFetch(
+    'http://localhost:3001/api/my-posts',
+    'GET',
+    undefined,
+    true,
+    'no-cache',
+  )
 
   if (!res.ok) {
     return <div>Failed to load</div>
@@ -48,7 +47,7 @@ export default async function Page() {
           <div className="order-2 md:order-1">
             {data.length > 0 && (
               <div className="flex flex-col">
-                <h1 className="text-3xl font-semibold">Posts </h1>
+                <h1 className="text-3xl font-semibold">Your Posts </h1>
                 <p className="text-sm">number of posts: {data.length}</p>
               </div>
             )}

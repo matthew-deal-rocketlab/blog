@@ -19,9 +19,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import Link from 'next/link'
-import { UseFetch } from '@/hooks/useFetch'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { register } from '@/actions'
 
 const RegisterSchema = z
   .object({
@@ -54,23 +54,10 @@ export default function Page() {
     const { email, password } = data
 
     try {
-      const res = await UseFetch(
-        'http://localhost:3001/api/register',
-        'POST',
-        { email, password },
-        false,
-      )
+      const response = await register(email, password)
 
-      if (!res.ok) {
-        setAlert({ error: 'Something went wrong' })
-        return
-      }
-
-      const responseData = await res.json()
-
-      if ('error' in responseData) {
-        console.error('Failed to register:', responseData)
-        setAlert(responseData)
+      if (!response.success) {
+        setAlert({ error: response.message })
         return
       }
 

@@ -3,14 +3,12 @@ import { Post } from './admin/page'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Suspense } from 'react'
-import { useAuth } from '@/context/authProvider'
 import Section from '@/components/ui/section'
 import Grid from '@/components/ui/grid'
+import { UseFetch } from '@/hooks/useFetch'
 
 export default async function Page() {
-  const res = await fetch('http://localhost:3001/api/posts', { cache: 'no-cache' })
-
-  console.log(res)
+  const res = await UseFetch('http://localhost:3001/api/posts', 'GET', undefined, false, 'no-cache')
 
   if (!res.ok) {
     return <div>Failed to load</div>

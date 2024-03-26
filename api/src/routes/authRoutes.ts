@@ -9,10 +9,6 @@ export type User = {
   password: string
 }
 
-interface CreateUserError extends Error {
-  code: string
-}
-
 export const authRoutes = Router()
 
 const hashPassword = async (password: string): Promise<string> => {
@@ -31,10 +27,11 @@ authRoutes.post('/register', async (req, res) => {
     )
 
     // If the user was successfully inserted, return the user data
-    res.json(result.rows[0])
+    res.json({ user: result.rows[0], message: 'User registered successfully.' })
   } catch (error: any) {
+    console.error(error)
     // Check if the error message indicates a duplicate key violation
-    if (error.message.includes('duplicate key value')) {
+    if (error.message.includes('duplicate key')) {
       return res.status(409).json({ error: 'User already exists' })
     }
 

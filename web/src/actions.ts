@@ -69,3 +69,61 @@ export async function updatePost(id: number, title: string, content: string, sub
     return { message: 'Failed to update post.' }
   }
 }
+
+// login
+export async function login(email: string, password: string) {
+  try {
+    const response = await UseFetch('http://localhost:3001/api/login', 'POST', {
+      email,
+      password,
+    })
+
+    if (!response.ok) {
+      return { message: 'Failed to login.' }
+    }
+
+    const { token } = await response.json()
+
+    return { token }
+  } catch (error) {
+    console.error('Failed to login:', error)
+    return { message: 'Failed to login.' }
+  }
+}
+
+type ErrorResponse = {
+  error: string
+}
+
+type SuccessResponse = {
+  message: string
+}
+
+type RegisterResponse = {
+  message: string
+  success: boolean
+}
+
+export async function register(email: string, password: string): Promise<RegisterResponse> {
+  try {
+    const response = await UseFetch('http://localhost:3001/api/register', 'POST', {
+      email,
+      password,
+    })
+
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json()
+      return { success: false, message: errorResponse.error }
+    }
+
+    const successResponse: SuccessResponse = await response.json()
+    return { success: true, message: successResponse.message || 'User registered successfully.' }
+  } catch (error) {
+    console.error('Failed to register:', error)
+
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'An unknown error occurred',
+    }
+  }
+}
