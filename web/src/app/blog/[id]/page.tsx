@@ -1,5 +1,7 @@
+import Content from '@/components/posts/content'
 import BackButton from '@/components/ui/backButton'
 import Container from '@/components/ui/container'
+import HeaderTag from '@/components/ui/header'
 import Section from '@/components/ui/section'
 import { UseFetch } from '@/hooks/useFetch'
 import { format, parseISO } from 'date-fns'
@@ -25,11 +27,11 @@ export default async function Page({ params }: { params: { id: number } }) {
 
   return (
     <Section description="Posts" className="p-24">
-      <Container width="2xl">
-        <h1 className="text-5xl font-medium">{post.title}</h1>
-        <h2 className="mt-2 text-2xl font-medium">{post.sub_title}</h2>
+      <Container width="4xl">
+        <HeaderTag level="h1" text={post.title} className="text-5xl font-medium" />
+        <HeaderTag level="h2" text={post.sub_title} className="mt-2 text-2xl font-medium" />
         <p className="mb-8 text-[12px] text-black text-opacity-75">Created at: {formattedDate}</p>
-        <div className="prose mb-8 max-w-3xl" dangerouslySetInnerHTML={{ __html: post.content }} />
+        <Content post={post} />
         <div className="max-w-sm">
           <BackButton />
         </div>

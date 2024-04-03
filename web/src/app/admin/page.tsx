@@ -1,5 +1,6 @@
 import PostForm from '@/components/posts/Form'
 import Posts from '@/components/posts/posts'
+import HeaderTag from '@/components/ui/header'
 import { Skeleton } from '@/components/ui/skeleton'
 import { UseFetch } from '@/hooks/useFetch'
 import { Suspense } from 'react'
@@ -22,7 +23,7 @@ export default async function Page() {
   )
 
   if (!res.ok) {
-    return <div>Failed to load</div>
+    return <div>Failed to load blogs</div>
   }
 
   const data: Post[] = await res.json()
@@ -47,13 +48,13 @@ export default async function Page() {
           <div className="order-2 md:order-1">
             {data.length > 0 && (
               <div className="flex flex-col">
-                <h1 className="text-3xl font-semibold">Your Posts </h1>
+                <HeaderTag text="Your Posts" level="h1" className="text-3xl font-semibold" />
                 <p className="text-sm">number of posts: {data.length}</p>
               </div>
             )}
             <div className=" overflow-auto md:h-[80vh]">
               {data.length === 0 ? (
-                <div className="text-xl font-semibold ">No posts available</div>
+                <div className="text-xl font-semibold ">You haven&apos;t created any posts yet</div>
               ) : (
                 data.map(({ title, id, content, created_at, sub_title }) => (
                   <Posts

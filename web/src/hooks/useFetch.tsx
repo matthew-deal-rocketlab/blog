@@ -1,4 +1,6 @@
+import jwtDecoder from '@/utils/auth'
 import { cookieStoreGet } from '@/utils/cookie-store'
+import { NextResponse } from 'next/server'
 
 export async function UseFetch(
   url: string,
@@ -11,11 +13,19 @@ export async function UseFetch(
     'Content-Type': 'application/json',
   }
 
+  // Check if Authorization header should be included
   if (includeAuthorization) {
     const token = await cookieStoreGet('JWT_TOKEN')
     headers['Authorization'] = `Bearer ${token}`
+
+    const decoded = jwtDecoder(token ?? '')
+
+    if (!decoded) {
+      return NextResponse.redirect(new URL('/login'))
+    }
   }
 
+  // Set caching options
   if (cache !== 'default') {
     headers['Cache-Control'] = cache
   }
@@ -25,6 +35,7 @@ export async function UseFetch(
     headers,
   }
 
+  // Include request body if provided
   if (body) {
     options.body = JSON.stringify(body)
   }

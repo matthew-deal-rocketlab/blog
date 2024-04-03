@@ -19,14 +19,12 @@ type DecodedToken = {
   payload: object
 }
 
-// Base64 conversion
-// const btoa = (str: string) => Buffer.from(str).toString('base64');
 const atob = (str: string) => Buffer.from(str, 'base64').toString()
 
 const jwtDecoder = (token: string): DecodedToken | null => {
   const [headerEncoded, payloadEncoded, signature] = token.split('.')
   if (!headerEncoded || !payloadEncoded || !signature) {
-    return null // Invalid JWT format
+    return null
   }
 
   try {

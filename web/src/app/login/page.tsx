@@ -19,12 +19,10 @@ import {
 } from '@/components/ui/form'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { cookieStoreSet } from '@/utils/cookie-store'
-import { KEY_JWT_TOKEN } from '@/contstants'
-import { UseFetch } from '@/hooks/useFetch'
 import { useState } from 'react'
 import { login } from '@/actions'
 import { useAuth } from '@/context/authProvider'
+import { Routes } from '@/contstants'
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -54,12 +52,17 @@ export default function Page() {
 
       if (token) {
         loginProvider(token)
-        push('/')
-      } else if (message) {
+      }
+
+      if (message === 'Login successful.') {
+        push(Routes.HOME)
+      }
+
+      if (message) {
         setAlert({ error: message })
       }
     } catch (error) {
-      console.error(error)
+      setAlert({ error: 'Failed to login.' })
     }
   }
 
@@ -105,7 +108,7 @@ export default function Page() {
                   />
                 </div>
 
-                <Link href="/register" className="text-sm text-blue-500">
+                <Link href={Routes.REGISTER} className="text-sm text-blue-500">
                   {' '}
                   Don&apos;t have an account? Signup
                 </Link>

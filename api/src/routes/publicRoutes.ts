@@ -27,7 +27,7 @@ publicRoutes.get('/posts', async (req, res) => {
     res.json(processedPosts)
   } catch (error) {
     console.error(error)
-    res.status(500).send('Error retrieving posts')
+    res.status(500).json('Error retrieving posts')
   }
 })
 
@@ -39,7 +39,7 @@ publicRoutes.get('/posts/:id', async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM posts WHERE id = $1;', [id])
 
     if (rows.length === 0) {
-      return res.status(404).send('Post not found')
+      return res.status(404).json('Post not found')
     }
 
     const post = rows[0]
@@ -55,6 +55,6 @@ publicRoutes.get('/posts/:id', async (req, res) => {
     })
   } catch (error) {
     console.error(error)
-    res.status(500).send('Error retrieving the post')
+    res.status(500).json('Error retrieving the post')
   }
 })

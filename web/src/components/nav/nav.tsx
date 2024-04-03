@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/context/authProvider'
+import { Routes } from '@/contstants'
 import Link from 'next/link'
 
 export default function Nav() {
@@ -13,7 +14,7 @@ export default function Nav() {
   return (
     <nav className="flex items-center justify-between bg-black p-8 text-white">
       <div className="flex items-center space-x-4">
-        <Link href="/" className="text-xl">
+        <Link href={Routes.HOME} className="text-xl">
           Blog
         </Link>
       </div>
@@ -21,19 +22,19 @@ export default function Nav() {
       <div className="flex items-center space-x-4">
         {isAuthenticated ? (
           <>
-            <Link href="/admin" className="text-xl">
+            <Link href={Routes.ADMIN} className="text-xl">
               Admin
             </Link>
-            <Link href="/login" onClick={handleLogout} className="text-xl">
+            <Link href={Routes.LOGIN} onClick={handleLogout} className="text-xl">
               logout
             </Link>
           </>
         ) : (
           <>
-            <Link href="/login" className="text-xl">
+            <Link href={Routes.LOGIN} className="text-xl">
               Login
             </Link>
-            <Link href="/register" className="text-xl">
+            <Link href={Routes.REGISTER} className="text-xl">
               Register
             </Link>
           </>

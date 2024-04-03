@@ -39,6 +39,7 @@ authRoutes.post('/register', async (req, res) => {
     res.status(500).json({ error: 'Error creating new user' })
   }
 })
+
 authRoutes.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body
 
@@ -60,14 +61,10 @@ authRoutes.post('/login', async (req: Request, res: Response) => {
       return res.status(500).json({ error: 'Internal Server Error: JWT Secret Key not set' })
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-      },
-      process.env.JWT_SECRET_KEY,
-      { expiresIn: '1h' },
-    )
+    // Access token
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET_KEY, {
+      expiresIn: '3h',
+    })
 
     res.json({ token })
   } catch (error) {

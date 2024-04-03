@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 import { createPost } from '@/actions'
 import { Button } from '@/components/ui/button'
@@ -11,8 +11,9 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form'
 import { useAuth } from '@/context/authProvider'
-import { useRouter } from 'next/navigation'
 import { Skeleton } from '../ui/skeleton'
+import HeaderTag from '../ui/header'
+import { Toaster } from '../ui/sonner'
 
 const PostSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -21,8 +22,6 @@ const PostSchema = z.object({
 })
 
 export default function PostForm() {
-  const [message, setMessage] = useState<string | null>(null)
-
   const { isAuthenticated, user } = useAuth()
 
   const form = useForm<z.infer<typeof PostSchema>>({
@@ -42,9 +41,24 @@ export default function PostForm() {
 
     const user_id = user?.id as number
 
+    if (!result.success) {
+      toast.error('Something went wrong, Your post was not created', {
+        action: {
+          label: 'Close',
+          onClick: () => {},
+        },
+      })
+    }
+
     if (result.success) {
       const result = await createPost(title, content, sub_title, user_id)
-      setMessage(result.message)
+      toast.success(result.message, {
+        action: {
+          label: 'Close',
+          onClick: () => {},
+        },
+      })
+
       form.reset()
     }
 
@@ -64,55 +78,57 @@ export default function PostForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="mt-8 flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold">Write a Blog</h1>
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="mt-8 flex flex-col gap-2">
+          <HeaderTag text="Write a Blog" level="h2" className="text-2xl font-semibold" />
 
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Title" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="sub_title"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Sub Title" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  placeholder="Create content using Markdown, and the BE will do some magic!"
-                  rows={30}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Title" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="sub_title"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Sub Title" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder="Create content using Markdown, and the BE will do some magic!"
+                    rows={30}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Button className="my-8">Create Post</Button>
+          <Button className="my-8">Create Post</Button>
+        </form>
+      </Form>
 
-        {message && <p className="text-red-500">{message}</p>}
-      </form>
-    </Form>
+      <Toaster position="bottom-right" richColors theme="light" />
+    </>
   )
 }

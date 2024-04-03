@@ -71,19 +71,19 @@ adminRoutes.put('/posts/:id', async (req, res) => {
   const { title, content, sub_title } = req.body
 
   if (!req.user || !req.user.id) {
-    return res.status(403).send('Unauthorized access - user not identified')
+    return res.status(403).json('Unauthorized access - user not identified')
   }
 
   try {
     const fetchRes = await pool.query('SELECT * FROM posts WHERE id = $1;', [postId])
 
     if (fetchRes.rows.length === 0) {
-      return res.status(404).send('Post not found')
+      return res.status(404).json('Post not found')
     }
 
     // Check if the user ID associated with the post matches the authenticated user ID
     if (fetchRes.rows[0].user_id !== req.user.id) {
-      return res.status(403).send('Unauthorized access - user not authorized to update this post')
+      return res.status(403).json('Unauthorized access - user not authorized to update this post')
     }
 
     const { rows } = await pool.query(
@@ -94,14 +94,14 @@ adminRoutes.put('/posts/:id', async (req, res) => {
     res.json(rows[0])
   } catch (error) {
     console.error(error)
-    res.status(500).send('Error updating the post')
+    res.status(500).json('Error updating the post')
   }
 })
 
 // Get all posts for the authenticated user
 adminRoutes.get('/my-posts', async (req, res) => {
   if (!req.user || !req.user.id) {
-    return res.status(403).send('Unauthorized access - user not identified')
+    return res.status(403).json('Unauthorized access - user not identified')
   }
   const user_id = req.user.id
 
@@ -118,6 +118,6 @@ adminRoutes.get('/my-posts', async (req, res) => {
     res.json(processedPosts)
   } catch (error) {
     console.error(error)
-    res.status(500).send('Error retrieving user posts')
+    res.status(500).json('Error retrieving user posts')
   }
 })

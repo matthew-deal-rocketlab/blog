@@ -1,4 +1,5 @@
 // src/routes/adminRoutes.ts
+
 import { Router } from 'express'
 
 const pool = require('../db')
@@ -13,12 +14,12 @@ userRoutes.get('/users/:id', async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM users WHERE id = $1;', [userId])
 
     if (rows.length === 0) {
-      return res.status(404).send('User not found')
+      return res.status(404).json('User not found')
     }
 
     res.json(rows[0])
   } catch (error) {
     console.error(error)
-    res.status(500).send('Error retrieving the user')
+    res.status(500).json('Error retrieving the user')
   }
 })

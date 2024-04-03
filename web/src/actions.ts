@@ -2,94 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { UseFetch } from './hooks/useFetch'
-
-export async function createPost(
-  title: string,
-  content: string,
-  sub_title: string,
-  user_id: number,
-) {
-  try {
-    const response = await UseFetch('http://localhost:3001/api/posts', 'POST', {
-      title,
-      content,
-      sub_title,
-      user_id,
-    })
-
-    if (!response.ok) {
-      return { message: response.statusText }
-    }
-
-    revalidatePath('/')
-
-    return { message: 'Post created successfully.' }
-  } catch (error) {
-    console.error('Failed to create post:', error)
-    return { message: 'Failed to create post.' }
-  }
-}
-
-export async function deletePost(id: number) {
-  try {
-    const response = await UseFetch(`http://localhost:3001/api/posts/${id}`, 'DELETE', {
-      id,
-    })
-
-    if (!response.ok) {
-      return { message: 'Failed to delete post.' }
-    }
-
-    revalidatePath('/')
-
-    return { message: 'Post deleted successfully.' }
-  } catch (error) {
-    console.error('Failed to delete post:', error)
-    return { message: 'Failed to delete post.' }
-  }
-}
-
-export async function updatePost(id: number, title: string, content: string, sub_title: string) {
-  try {
-    const response = await UseFetch(`http://localhost:3001/api/posts/${id}`, 'PUT', {
-      title,
-      content,
-      sub_title,
-    })
-
-    if (!response.ok) {
-      return { message: 'Failed to update post.' }
-    }
-
-    revalidatePath('/')
-
-    return { message: 'Post updated successfully.' }
-  } catch (error) {
-    console.error('Failed to update post:', error)
-    return { message: 'Failed to update post.' }
-  }
-}
-
-// login
-export async function login(email: string, password: string) {
-  try {
-    const response = await UseFetch('http://localhost:3001/api/login', 'POST', {
-      email,
-      password,
-    })
-
-    if (!response.ok) {
-      return { message: 'Failed to login.' }
-    }
-
-    const { token } = await response.json()
-
-    return { token }
-  } catch (error) {
-    console.error('Failed to login:', error)
-    return { message: 'Failed to login.' }
-  }
-}
+import { API_BASE_URL } from './contstants'
 
 type ErrorResponse = {
   error: string
@@ -104,9 +17,115 @@ type RegisterResponse = {
   success: boolean
 }
 
+export async function createPost(
+  title: string,
+  content: string,
+  sub_title: string,
+  user_id: number,
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await UseFetch(`${API_BASE_URL}/posts`, 'POST', {
+      title,
+      content,
+      sub_title,
+      user_id,
+    })
+
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json()
+      return { success: false, message: errorResponse.error || response.statusText }
+    }
+
+    revalidatePath('/')
+
+    return { success: true, message: 'Post created successfully.' }
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to create post.',
+    }
+  }
+}
+
+export async function deletePost(id: number): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await UseFetch(`${API_BASE_URL}/posts/${id}`, 'DELETE')
+
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json()
+      return { success: false, message: errorResponse.error || 'Failed to delete post.' }
+    }
+
+    revalidatePath('/')
+
+    return { success: true, message: 'Post deleted successfully.' }
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to delete post.',
+    }
+  }
+}
+
+export async function updatePost(
+  id: number,
+  title: string,
+  content: string,
+  sub_title: string,
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await UseFetch(`${API_BASE_URL}/posts/${id}`, 'PUT', {
+      title,
+      content,
+      sub_title,
+    })
+
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json()
+      return { success: false, message: errorResponse.error || 'Failed to update post.' }
+    }
+
+    revalidatePath('/')
+
+    return { success: true, message: 'Post updated successfully.' }
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to update post.',
+    }
+  }
+}
+
+// login
+export async function login(
+  email: string,
+  password: string,
+): Promise<{ success: boolean; message: string; token?: string }> {
+  try {
+    const response = await UseFetch(`${API_BASE_URL}/login`, 'POST', {
+      email,
+      password,
+    })
+
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json()
+      return { success: false, message: errorResponse.error || 'Failed to login.' }
+    }
+
+    const { token } = await response.json()
+
+    return { success: true, message: 'Login successful.', token }
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to login.',
+    }
+  }
+}
+
 export async function register(email: string, password: string): Promise<RegisterResponse> {
   try {
-    const response = await UseFetch('http://localhost:3001/api/register', 'POST', {
+    const response = await UseFetch(`${API_BASE_URL}/register`, 'POST', {
       email,
       password,
     })
@@ -119,8 +138,6 @@ export async function register(email: string, password: string): Promise<Registe
     const successResponse: SuccessResponse = await response.json()
     return { success: true, message: successResponse.message || 'User registered successfully.' }
   } catch (error) {
-    console.error('Failed to register:', error)
-
     return {
       success: false,
       message: error instanceof Error ? error.message : 'An unknown error occurred',

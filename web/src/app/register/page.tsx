@@ -3,6 +3,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
 
 import Container from '@/components/ui/container'
 import Section from '@/components/ui/section'
@@ -19,9 +20,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import Link from 'next/link'
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { register } from '@/actions'
+import { Routes } from '@/contstants'
 
 const RegisterSchema = z
   .object({
@@ -61,9 +62,9 @@ export default function Page() {
         return
       }
 
-      push('/login')
+      push(Routes.LOGIN)
     } catch (error) {
-      console.error(error)
+      setAlert({ error: 'An error occurred. Please try again.' })
     }
   }
 
@@ -125,7 +126,7 @@ export default function Page() {
                     )}
                   />
                 </div>
-                <Link href="/login" className="text-sm text-blue-500">
+                <Link href={Routes.LOGIN} className="text-sm text-blue-500">
                   {' '}
                   Already have an account? Login
                 </Link>

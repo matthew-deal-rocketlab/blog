@@ -3,6 +3,7 @@
 import { format, parseISO } from 'date-fns'
 import { MouseEvent, useState } from 'react'
 import { Pencil } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Button } from '../ui/button'
 import { deletePost, updatePost } from '@/actions'
@@ -21,6 +22,8 @@ import { Textarea } from '../ui/textarea'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { Post } from '@/app/admin/page'
+import HeaderTag from '../ui/header'
+import { Toaster } from '../ui/sonner'
 
 type postActions = 'delete' | 'update' | null
 
@@ -32,9 +35,9 @@ export default function Posts({
   created_at,
 }: Post) {
   const [updatedTitle, setUpdatedTitle] = useState(initialTitle)
+  const [updateSubTitle, setUpdatedSubTitle] = useState(sub_title)
   const [updatedContent, setUpdatedContent] = useState(initialContent)
   const [openModel, setOpenModel] = useState<postActions>(null)
-  const [message, setMessage] = useState('')
 
   const { push } = useRouter()
 
@@ -47,7 +50,14 @@ export default function Posts({
   const handleDeletePostClick = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
     e.stopPropagation()
     const result = await deletePost(id)
-    setMessage(result.message)
+    if (result.success) {
+      toast.error(result.message, {
+        action: {
+          label: 'Close',
+          onClick: () => {},
+        },
+      })
+    }
   }
 
   const handleUpdatePost = async (
@@ -59,7 +69,14 @@ export default function Posts({
   ) => {
     e.stopPropagation()
     const result = await updatePost(id, title, content, sub_title)
-    setMessage(result.message)
+    if (result.success) {
+      toast.success(result.message, {
+        action: {
+          label: 'Close',
+          onClick: () => {},
+        },
+      })
+    }
   }
 
   const handleOpenModal = (
@@ -83,9 +100,19 @@ export default function Posts({
           'hover:cursor-pointer hover:bg-black hover:text-white',
         )}>
         <div className="w-full">
-          <h1 className="mt-4 text-xl font-semibold">{initialTitle}</h1>
-          <h2 className="mb-4 text-base font-medium">{sub_title}</h2>
-          <p className="mt-2 text-[12px] text-black text-opacity-75">Created at: {formattedDate}</p>
+          <HeaderTag
+            level="h1"
+            text={initialTitle}
+            className="mt-4 text-xl font-semibold group-hover:text-white"
+          />
+          <HeaderTag
+            level="h2"
+            text={sub_title}
+            className="mb-4 text-base font-medium group-hover:text-white"
+          />
+          <p className="mt-2 text-[12px] text-black text-opacity-75 group-hover:text-white">
+            Created at: {formattedDate}
+          </p>
         </div>
         <div className="flex w-full flex-row gap-2">
           <Button
@@ -99,7 +126,6 @@ export default function Posts({
             className="hover:scale-105 hover:text-white active:scale-105 group-hover:border-black group-hover:bg-blue-500">
             <Pencil />
           </Button>
-          {message && <p className="text-red-500">{message}</p>}
         </div>
       </div>
 
@@ -156,6 +182,17 @@ export default function Posts({
               />
             </div>
             <div className="grid grid-cols-1 items-center gap-4">
+              <Label htmlFor="title" className="text-left">
+                Sub Title
+              </Label>
+              <Input
+                id="title"
+                defaultValue={sub_title}
+                className="col-span-3"
+                onChange={e => setUpdatedSubTitle(e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-1 items-center gap-4">
               <Label htmlFor="content" className="text-left">
                 Content
               </Label>
@@ -178,7 +215,7 @@ export default function Posts({
 
             <DialogClose asChild>
               <Button
-                onClick={e => handleUpdatePost(e, id, updatedTitle, updatedContent, sub_title)}
+                onClick={e => handleUpdatePost(e, id, updatedTitle, updatedContent, updateSubTitle)}
                 type="submit">
                 Save changes
               </Button>
@@ -186,6 +223,7 @@ export default function Posts({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Toaster position="bottom-right" richColors theme="light" />
     </>
   )
 }

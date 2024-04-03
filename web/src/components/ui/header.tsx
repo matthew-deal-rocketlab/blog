@@ -21,7 +21,7 @@ export default function HeaderTag({ level, text, className }: HeaderProps) {
   const headerClasses = cn(
     'text-[#221D2A]',
     {
-      'md:text-5xl text-4xl': level === header.h1,
+      'text-5xl': level === header.h1,
       'text-4xl': level === header.h2,
       'text-3xl': level === header.h3,
       'text-2xl': level === header.h4,
