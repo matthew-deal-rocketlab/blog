@@ -1,8 +1,9 @@
 import PostForm from '@/components/posts/Form'
 import Posts from '@/components/posts/posts'
 import HeaderTag from '@/components/ui/header'
-import { Skeleton } from '@/components/ui/skeleton'
+import AdminSkelton from '@/components/ui/skeletons/adminSkeleton'
 import { UseFetch } from '@/hooks/useFetch'
+import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 
 export type Post = {
@@ -22,6 +23,10 @@ export default async function Page() {
     'no-cache',
   )
 
+  if (res.status === 401) {
+    return redirect('/login')
+  }
+
   if (!res.ok) {
     return <div>Failed to load blogs</div>
   }
@@ -30,20 +35,7 @@ export default async function Page() {
 
   return (
     <main className="mx-auto mt-10 flex max-w-6xl flex-col p-10 md:px-20">
-      <Suspense
-        fallback={
-          <>
-            <Skeleton className="mb-4 h-10 w-1/3" />
-            <Skeleton className="mb-2 h-10 w-1/2" />
-            <Skeleton className="mb-4 h-10 w-full" />
-            <Skeleton className="mb-2 h-10 w-1/4" />
-            <Skeleton className="h-10 w-1/2" />
-
-            <Skeleton className="mb-2 mt-8 h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="mt-8 h-10 w-full" />
-          </>
-        }>
+      <Suspense fallback={<AdminSkelton />}>
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="order-2 md:order-1">
             {data.length > 0 && (
@@ -54,7 +46,7 @@ export default async function Page() {
             )}
             <div className=" overflow-auto md:h-[80vh]">
               {data.length === 0 ? (
-                <div className="text-xl font-semibold ">You haven&apos;t created any posts yet</div>
+                <p className="text-xl font-semibold">You haven&apos;t created any posts yet</p>
               ) : (
                 data.map(({ title, id, content, created_at, sub_title }) => (
                   <Posts

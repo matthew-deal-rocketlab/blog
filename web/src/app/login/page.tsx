@@ -19,10 +19,12 @@ import {
 } from '@/components/ui/form'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { login } from '@/actions'
 import { useAuth } from '@/context/authProvider'
-import { Routes } from '@/contstants'
+import { KEY_JWT_TOKEN, Routes } from '@/contstants'
+import { cookieStoreRemove } from '@/utils/cookie-store'
+import Alert from '@/components/ui/alert'
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -31,8 +33,10 @@ const LoginSchema = z.object({
 
 export default function Page() {
   const [alert, setAlert] = useState({
-    error: '',
+    submitType: false,
+    text: '',
   })
+
   const { push } = useRouter()
   const { login: loginProvider } = useAuth()
 
@@ -44,25 +48,32 @@ export default function Page() {
     },
   })
 
+  useEffect(() => {
+    const removeToken = async () => {
+      await cookieStoreRemove(KEY_JWT_TOKEN)
+    }
+
+    removeToken()
+  }, [])
+
   const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
     const { email, password } = data
 
     try {
-      const { token, message } = await login(email, password)
+      const { token, message, success } = await login(email, password)
 
-      if (token) {
-        loginProvider(token)
-      }
-
+      if (token) loginProvider(token)
       if (message === 'Login successful.') {
-        push(Routes.HOME)
+        setTimeout(() => {
+          push(Routes.HOME)
+        }, 500)
       }
 
-      if (message) {
-        setAlert({ error: message })
-      }
+      if (success) setAlert({ submitType: success, text: message })
+
+      if (!success) setAlert({ submitType: success, text: message })
     } catch (error) {
-      setAlert({ error: 'Failed to login.' })
+      setAlert({ submitType: false, text: 'Failed to login.' })
     }
   }
 
@@ -99,9 +110,8 @@ export default function Page() {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input id="password" placeholder="Password" {...field} />
+                          <Input type="password" id="password" placeholder="Password" {...field} />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -115,7 +125,7 @@ export default function Page() {
                 <CardFooter className="flex justify-end">
                   <Button>Login</Button>
                 </CardFooter>
-                {alert.error && <div className="text-red-500">{alert.error}</div>}
+                {alert.text && <Alert submitType={alert.submitType} text={alert.text} />}
               </form>
             </Form>
           </CardContent>

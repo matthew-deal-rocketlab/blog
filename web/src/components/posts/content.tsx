@@ -1,18 +1,25 @@
 'use client'
 
 import hljs from 'highlight.js'
-import 'highlight.js/styles/night-owl.css' // or choose another style
+import 'highlight.js/styles/night-owl.css'
 import { useEffect } from 'react'
 
-export default function Content({ post }: any) {
+type Post = {
+  content: string
+}
+
+export default function Content({ content }: Post) {
   useEffect(() => {
-    hljs.highlightAll()
-  }, [])
+    const highlighter = async () => {
+      hljs.highlightAll()
+    }
+    highlighter()
+  }, [content])
 
   return (
     <div
-      className="prose-pre:none prose mb-8 max-w-5xl prose-code:p-10 prose-pre:p-0"
-      dangerouslySetInnerHTML={{ __html: post.content }}
+      className="prose mb-8 max-w-4xl prose-pre:p-0"
+      dangerouslySetInnerHTML={{ __html: content }}
     />
   )
 }

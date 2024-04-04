@@ -1,5 +1,3 @@
-import { cn } from '../../lib/utils'
-
 const header = {
   h1: 'h1',
   h2: 'h2',
@@ -17,21 +15,8 @@ type HeaderProps = {
 
 export type Header = (typeof header)[keyof typeof header]
 
-export default function HeaderTag({ level, text, className }: HeaderProps) {
-  const headerClasses = cn(
-    'text-[#221D2A]',
-    {
-      'text-5xl': level === header.h1,
-      'text-4xl': level === header.h2,
-      'text-3xl': level === header.h3,
-      'text-2xl': level === header.h4,
-      'text-xl': level === header.h5,
-      'text-lg': level === header.h6,
-    },
-    className,
-  )
-
+export default function HeaderTag({ level, text, className = '' }: HeaderProps) {
   const HeaderTag = level as keyof JSX.IntrinsicElements
 
-  return <HeaderTag className={headerClasses}>{text}</HeaderTag>
+  return <HeaderTag className={className}>{text}</HeaderTag>
 }

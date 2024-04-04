@@ -24,8 +24,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const logout = async (token?: string) => {
-    if (token) cookieStoreRemove(KEY_JWT_TOKEN)
+  const logout = async () => {
     setUser(null)
   }
 

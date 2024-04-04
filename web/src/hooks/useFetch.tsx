@@ -1,6 +1,4 @@
-import jwtDecoder from '@/utils/auth'
 import { cookieStoreGet } from '@/utils/cookie-store'
-import { NextResponse } from 'next/server'
 
 export async function UseFetch(
   url: string,
@@ -17,12 +15,6 @@ export async function UseFetch(
   if (includeAuthorization) {
     const token = await cookieStoreGet('JWT_TOKEN')
     headers['Authorization'] = `Bearer ${token}`
-
-    const decoded = jwtDecoder(token ?? '')
-
-    if (!decoded) {
-      return NextResponse.redirect(new URL('/login'))
-    }
   }
 
   // Set caching options
@@ -42,6 +34,7 @@ export async function UseFetch(
 
   try {
     const response = await fetch(url, options)
+
     return response
   } catch (error) {
     console.error('Error fetching data:', error)

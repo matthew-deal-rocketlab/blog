@@ -23,6 +23,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { register } from '@/actions'
 import { Routes } from '@/contstants'
+import Alert from '@/components/ui/alert'
 
 const RegisterSchema = z
   .object({
@@ -37,7 +38,8 @@ const RegisterSchema = z
 
 export default function Page() {
   const [alert, setAlert] = useState({
-    error: '',
+    submitType: false,
+    text: '',
   })
 
   const { push } = useRouter()
@@ -55,16 +57,21 @@ export default function Page() {
     const { email, password } = data
 
     try {
-      const response = await register(email, password)
-
-      if (!response.success) {
-        setAlert({ error: response.message })
+      const { message, success } = await register(email, password)
+      if (!success) {
+        setAlert({ submitType: success, text: message })
         return
       }
 
-      push(Routes.LOGIN)
+      if (success) setAlert({ submitType: success, text: message })
+
+      if (!success) setAlert({ submitType: success, text: message })
+
+      setTimeout(() => {
+        push(Routes.LOGIN)
+      }, 500)
     } catch (error) {
-      setAlert({ error: 'An error occurred. Please try again.' })
+      setAlert({ submitType: false, text: 'Failed to register.' })
     }
   }
 
@@ -102,7 +109,7 @@ export default function Page() {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input id="password" placeholder="Password" {...field} />
+                          <Input type="password" id="password" placeholder="Password" {...field} />
                         </FormControl>
 
                         <FormMessage />
@@ -118,7 +125,12 @@ export default function Page() {
                       <FormItem>
                         <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
-                          <Input id="confirm_password" placeholder="Confirm Password" {...field} />
+                          <Input
+                            type="password"
+                            id="confirm_password"
+                            placeholder="Confirm Password"
+                            {...field}
+                          />
                         </FormControl>
                         <FormDescription>This is your public display name.</FormDescription>
                         <FormMessage />
@@ -134,7 +146,7 @@ export default function Page() {
                   <Button>Register</Button>
                 </CardFooter>
 
-                {alert && <p className="text-red-500">{alert.error}</p>}
+                {alert.text && <Alert submitType={alert.submitType} text={alert.text} />}
               </form>
             </Form>
           </CardContent>

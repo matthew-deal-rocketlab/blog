@@ -8,7 +8,7 @@ type SectionProps = {
 
 export default function Section({ children, description, className }: SectionProps) {
   return (
-    <section aria-labelledby={description} className={cn('flex justify-center py-14', className)}>
+    <section aria-labelledby={description} className={cn('flex justify-center py-6', className)}>
       {children}
     </section>
   )

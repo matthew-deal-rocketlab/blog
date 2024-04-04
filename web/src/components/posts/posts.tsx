@@ -24,6 +24,7 @@ import { useRouter } from 'next/navigation'
 import { Post } from '@/app/admin/page'
 import HeaderTag from '../ui/header'
 import { Toaster } from '../ui/sonner'
+import { Routes } from '@/contstants'
 
 type postActions = 'delete' | 'update' | null
 
@@ -32,6 +33,7 @@ export default function Posts({
   sub_title,
   content: initialContent,
   id,
+
   created_at,
 }: Post) {
   const [updatedTitle, setUpdatedTitle] = useState(initialTitle)
@@ -44,7 +46,7 @@ export default function Posts({
   const formattedDate = format(parseISO(created_at), "dd/MM/yyyy 'at' ha")
 
   const handleRedirect = () => {
-    push(`/blog/${id}`)
+    push(`${Routes.POST}/${id}`)
   }
 
   const handleDeletePostClick = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
@@ -110,9 +112,9 @@ export default function Posts({
             text={sub_title}
             className="mb-4 text-base font-medium group-hover:text-white"
           />
-          <p className="mt-2 text-[12px] text-black text-opacity-75 group-hover:text-white">
+          <time className="mt-2 text-[12px] text-black text-opacity-75 group-hover:text-white">
             Created at: {formattedDate}
-          </p>
+          </time>
         </div>
         <div className="flex w-full flex-row gap-2">
           <Button

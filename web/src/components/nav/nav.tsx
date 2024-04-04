@@ -1,45 +1,57 @@
 'use client'
 
 import { useAuth } from '@/context/authProvider'
-import { Routes } from '@/contstants'
+import { KEY_JWT_TOKEN, Routes } from '@/contstants'
+import { cookieStoreRemove } from '@/utils/cookie-store'
 import Link from 'next/link'
 
 export default function Nav() {
   const { isAuthenticated, logout } = useAuth()
 
   const handleLogout = async () => {
+    cookieStoreRemove(KEY_JWT_TOKEN)
     logout()
   }
 
   return (
     <nav className="flex items-center justify-between bg-black p-8 text-white">
-      <div className="flex items-center space-x-4">
-        <Link href={Routes.HOME} className="text-xl">
-          Blog
-        </Link>
-      </div>
+      <ul className="flex items-center space-x-4">
+        <li>
+          <Link href={Routes.HOME} className="text-xl">
+            Blog
+          </Link>
+        </li>
+      </ul>
 
-      <div className="flex items-center space-x-4">
+      <ul className="flex items-center space-x-4">
         {isAuthenticated ? (
           <>
-            <Link href={Routes.ADMIN} className="text-xl">
-              Admin
-            </Link>
-            <Link href={Routes.LOGIN} onClick={handleLogout} className="text-xl">
-              logout
-            </Link>
+            <li>
+              <Link href={Routes.ADMIN} className="text-xl">
+                Admin
+              </Link>
+            </li>
+            <li>
+              <Link href={Routes.LOGIN} onClick={handleLogout} className="text-xl">
+                Logout
+              </Link>
+            </li>
           </>
         ) : (
           <>
-            <Link href={Routes.LOGIN} className="text-xl">
-              Login
-            </Link>
-            <Link href={Routes.REGISTER} className="text-xl">
-              Register
-            </Link>
+            <li>
+              <Link href={Routes.LOGIN} className="text-xl">
+                Login
+              </Link>
+            </li>
+            <li>
+              <Link href={Routes.REGISTER} className="text-xl">
+                Register
+              </Link>
+            </li>
           </>
         )}
-      </div>
+      </ul>
     </nav>
   )
 }
