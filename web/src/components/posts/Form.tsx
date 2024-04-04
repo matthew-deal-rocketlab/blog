@@ -11,15 +11,10 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form'
 import { useAuth } from '@/context/authProvider'
-import { Skeleton } from '../ui/skeleton'
 import HeaderTag from '../ui/header'
 import { Toaster } from '../ui/sonner'
-
-const PostSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  sub_title: z.string().min(1, 'Sub Title is required'),
-  content: z.string().min(1, 'Content is required'),
-})
+import { PostSchema } from '@/zodSchemas'
+import FormSkeleton from '../ui/skeletons/formSkeleton'
 
 export default function PostForm() {
   const { isAuthenticated, user } = useAuth()
@@ -65,17 +60,7 @@ export default function PostForm() {
     return
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div>
-        <Skeleton className="mb-4 h-10" />
-        <Skeleton className="mb-4 h-10" />
-        <Skeleton className="mb-4 h-10" />
-        <Skeleton className="mb-4 h-10" />
-        <Skeleton className="mb-4 h-10" />
-      </div>
-    )
-  }
+  if (!isAuthenticated) return <FormSkeleton />
 
   return (
     <>

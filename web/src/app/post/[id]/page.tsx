@@ -1,24 +1,18 @@
 import { Post } from '@/app/admin/page'
-import Content from '@/components/posts/content'
 import BackButton from '@/components/ui/backButton'
-import Container from '@/components/ui/container'
 import HeaderTag from '@/components/ui/header'
 import Section from '@/components/ui/section'
-import { Skeleton } from '@/components/ui/skeleton'
 import { UseFetch } from '@/hooks/useFetch'
 import { format, parseISO } from 'date-fns'
-import { Suspense } from 'react'
+import * as cheerio from 'cheerio'
+
+import { codeToHtml } from 'shiki'
+import { API_BASE_URL } from '@/contstants'
 
 export default async function Page({ params }: { params: { id: number } }) {
   const { id } = params
 
-  const res = await UseFetch(
-    `http://localhost:3001/api/posts/${id}`,
-    'GET',
-    undefined,
-    false,
-    'no-cache',
-  )
+  const res = await UseFetch(`${API_BASE_URL}/posts/${id}`, 'GET', undefined, false, 'no-cache')
 
   if (!res.ok) {
     return <div className="mx-auto mt-24 max-w-sm text-3xl font-medium">No Data Found</div>
@@ -26,6 +20,24 @@ export default async function Page({ params }: { params: { id: number } }) {
 
   const post: Post = await res.json()
   const content = post.content
+
+  // Highlight code blocks
+  const $ = cheerio.load(content)
+  await Promise.all(
+    $('pre code')
+      .map(async (index, element) => {
+        const codeBlock = $(element)
+        const rawCode = codeBlock.text()
+        const highlightedHtml = await codeToHtml(rawCode, {
+          lang: 'typescript',
+          theme: 'night-owl',
+        })
+        codeBlock.html(highlightedHtml)
+      })
+      .get(),
+  )
+
+  const updatedHtml = $.html()
 
   const formattedDate = format(parseISO(post.created_at), "dd/MM/yyyy 'at' ha")
 
@@ -37,9 +49,11 @@ export default async function Page({ params }: { params: { id: number } }) {
         <time className="mb-8 text-[12px] text-black text-opacity-75">
           Created at: {formattedDate}
         </time>
-        <Suspense fallback={<Skeleton className="h-24 max-w-4xl" />}>
-          <Content content={content} />
-        </Suspense>
+
+        <div
+          className="prose mb-8 max-w-4xl prose-code:text-base prose-pre:m-0 prose-pre:p-4 "
+          dangerouslySetInnerHTML={{ __html: updatedHtml }}
+        />
 
         <div className="max-w-sm">
           <BackButton />

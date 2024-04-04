@@ -3,8 +3,6 @@
 import { revalidatePath } from 'next/cache'
 import { UseFetch } from './hooks/useFetch'
 import { API_BASE_URL } from './contstants'
-import { cookieStoreRemove } from './utils/cookie-store'
-import { cookies } from 'next/headers'
 
 type ErrorResponse = {
   error: string
@@ -12,11 +10,6 @@ type ErrorResponse = {
 
 type SuccessResponse = {
   message: string
-}
-
-type RegisterResponse = {
-  message: string
-  success: boolean
 }
 
 export async function createPost(
@@ -136,8 +129,6 @@ export async function register(
     })
 
     if (!response.ok) {
-      // Assuming response.json() for an error from /register endpoint also gives an object
-      // with an `error` property similar to the login endpoint
       const errorResponse: ErrorResponse = await response.json()
       return { success: false, message: errorResponse.error || 'Failed to register.' }
     }
@@ -145,8 +136,6 @@ export async function register(
     return {
       success: true,
       message: successResponse.message || 'User registered successfully.',
-      // Include token if your register endpoint also issues a token upon success,
-      // otherwise, you can omit it or leave it as undefined.
     }
   } catch (error) {
     return {

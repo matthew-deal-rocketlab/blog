@@ -25,11 +25,7 @@ import { useAuth } from '@/context/authProvider'
 import { KEY_JWT_TOKEN, Routes } from '@/contstants'
 import { cookieStoreRemove } from '@/utils/cookie-store'
 import Alert from '@/components/ui/alert'
-
-const LoginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-})
+import { LoginSchema } from '@/zodSchemas'
 
 export default function Page() {
   const [alert, setAlert] = useState({
@@ -50,7 +46,7 @@ export default function Page() {
 
   useEffect(() => {
     const removeToken = async () => {
-      await cookieStoreRemove(KEY_JWT_TOKEN)
+      cookieStoreRemove(KEY_JWT_TOKEN)
     }
 
     removeToken()
@@ -63,13 +59,13 @@ export default function Page() {
       const { token, message, success } = await login(email, password)
 
       if (token) loginProvider(token)
-      if (message === 'Login successful.') {
+
+      if (success) {
+        setAlert({ submitType: success, text: message })
         setTimeout(() => {
           push(Routes.HOME)
         }, 500)
       }
-
-      if (success) setAlert({ submitType: success, text: message })
 
       if (!success) setAlert({ submitType: success, text: message })
     } catch (error) {

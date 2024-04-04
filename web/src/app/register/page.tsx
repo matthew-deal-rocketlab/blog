@@ -24,17 +24,7 @@ import { useRouter } from 'next/navigation'
 import { register } from '@/actions'
 import { Routes } from '@/contstants'
 import Alert from '@/components/ui/alert'
-
-const RegisterSchema = z
-  .object({
-    email: z.string().email(),
-    password: z.string().min(8),
-    confirm_password: z.string().min(8),
-  })
-  .refine(data => data.password === data.confirm_password, {
-    message: "Passwords don't match",
-    path: ['confirm_password'],
-  })
+import { RegisterSchema } from '@/zodSchemas'
 
 export default function Page() {
   const [alert, setAlert] = useState({
@@ -63,13 +53,14 @@ export default function Page() {
         return
       }
 
-      if (success) setAlert({ submitType: success, text: message })
+      if (success) {
+        setAlert({ submitType: success, text: message })
+        setTimeout(() => {
+          push(Routes.LOGIN)
+        }, 500)
+      }
 
       if (!success) setAlert({ submitType: success, text: message })
-
-      setTimeout(() => {
-        push(Routes.LOGIN)
-      }, 500)
     } catch (error) {
       setAlert({ submitType: false, text: 'Failed to register.' })
     }
