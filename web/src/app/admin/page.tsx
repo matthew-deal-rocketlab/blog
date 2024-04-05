@@ -2,6 +2,7 @@ import PostForm from '@/components/posts/Form'
 import Posts from '@/components/posts/posts'
 import HeaderTag from '@/components/ui/header'
 import AdminSkelton from '@/components/ui/skeletons/adminSkeleton'
+import { API_BASE_URL } from '@/contstants'
 import { UseFetch } from '@/hooks/useFetch'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
@@ -12,16 +13,11 @@ export type Post = {
   sub_title: string
   content: string
   created_at: string
+  shouldFocus?: boolean
 }
 
 export default async function Page() {
-  const res = await UseFetch(
-    'http://localhost:3001/api/my-posts',
-    'GET',
-    undefined,
-    true,
-    'no-cache',
-  )
+  const res = await UseFetch(`${API_BASE_URL}/my-posts`, 'GET', undefined, true, 'no-cache')
 
   if (res.status === 401) {
     return redirect('/login')

@@ -11,6 +11,7 @@ export const sanitizeOptions = {
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
     img: ['src', 'alt', 'title'],
+    span: ['class', 'style'],
   },
 }
 

@@ -114,7 +114,7 @@ export default function Page() {
                   />
                 </div>
 
-                <Link href={Routes.REGISTER} className="text-sm text-blue-500">
+                <Link href={Routes.REGISTER} className="text-sm font-medium text-blue-600">
                   {' '}
                   Don&apos;t have an account? Signup
                 </Link>

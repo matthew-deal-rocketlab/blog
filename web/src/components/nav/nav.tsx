@@ -3,7 +3,7 @@
 import { useAuth } from '@/context/authProvider'
 import { KEY_JWT_TOKEN, Routes } from '@/contstants'
 import { cookieStoreRemove } from '@/utils/cookie-store'
-import Link from 'next/link'
+import NavLink from '../ui/navLink'
 
 export default function Nav() {
   const { isAuthenticated, logout } = useAuth()
@@ -14,12 +14,10 @@ export default function Nav() {
   }
 
   return (
-    <nav className="flex items-center justify-between bg-black p-8 text-white">
+    <nav className="flex items-center justify-between bg-primary p-8 text-white">
       <ul className="flex items-center space-x-4">
         <li>
-          <Link href={Routes.HOME} className="text-xl">
-            Blog
-          </Link>
+          <NavLink route={Routes.HOME} text="Blog" />
         </li>
       </ul>
 
@@ -27,27 +25,19 @@ export default function Nav() {
         {isAuthenticated ? (
           <>
             <li>
-              <Link href={Routes.ADMIN} className="text-xl">
-                Admin
-              </Link>
+              <NavLink route={Routes.ADMIN} text="Admin" />
             </li>
             <li>
-              <Link href={Routes.LOGIN} onClick={handleLogout} className="text-xl">
-                Logout
-              </Link>
+              <NavLink route={Routes.LOGIN} onClick={handleLogout} text="Logout" />
             </li>
           </>
         ) : (
           <>
             <li>
-              <Link href={Routes.LOGIN} className="text-xl">
-                Login
-              </Link>
+              <NavLink route={Routes.LOGIN} text="Login" />
             </li>
             <li>
-              <Link href={Routes.REGISTER} className="text-xl">
-                Register
-              </Link>
+              <NavLink route={Routes.REGISTER} text="Register" />
             </li>
           </>
         )}

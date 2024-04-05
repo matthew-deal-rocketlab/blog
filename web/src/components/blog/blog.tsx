@@ -7,17 +7,27 @@ import Posts from './posts'
 import { useAuth } from '@/context/authProvider'
 import { Post } from '@/app/admin/page'
 import { Routes } from '@/contstants'
+import { Skeleton } from '../ui/skeleton'
 
 type AllBlogsProps = {
   data: Post[]
 }
 
 export default function AllBlogs({ data }: AllBlogsProps) {
-  const { user } = useAuth()
+  const { user, isLoading } = useAuth()
+
+  if (isLoading)
+    return (
+      <>
+        <Skeleton className="h-5 w-[230px]" />
+        <Skeleton className="h-5 w-[250px]" />
+        <Skeleton className="mt-5 h-10 w-[100px]" />
+      </>
+    )
 
   return (
     <main>
-      {data.length === 0 && user && (
+      {data.length === 0 && user ? (
         <div className="max-w-3xl text-lg font-medium">
           <p>
             <strong>No Posts have been Created.</strong>
@@ -27,11 +37,14 @@ export default function AllBlogs({ data }: AllBlogsProps) {
             <Button>Create a post</Button>
           </Link>
         </div>
+      ) : (
+        'No blog posts available'
       )}
 
-      <Grid cols={4} className="grid-cols-2 md:grid-cols-4">
-        {data.map(({ title, id, content, created_at, sub_title }) => (
+      <Grid cols={4} className="grid-cols-1 md:grid-cols-4">
+        {data.map(({ title, id, content, created_at, sub_title }, index) => (
           <Posts
+            shouldFocus={index === 0}
             key={id}
             id={id}
             content={content}

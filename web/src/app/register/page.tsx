@@ -129,7 +129,7 @@ export default function Page() {
                     )}
                   />
                 </div>
-                <Link href={Routes.LOGIN} className="text-sm text-blue-500">
+                <Link href={Routes.LOGIN} className="text-sm font-medium text-blue-600">
                   {' '}
                   Already have an account? Login
                 </Link>

@@ -25,6 +25,7 @@ import { Post } from '@/app/admin/page'
 import HeaderTag from '../ui/header'
 import { Toaster } from '../ui/sonner'
 import { Routes } from '@/contstants'
+import { Card } from '../ui/card'
 
 type postActions = 'delete' | 'update' | null
 
@@ -49,7 +50,7 @@ export default function Posts({
     push(`${Routes.POST}/${id}`)
   }
 
-  const handleDeletePostClick = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
+  const handleDeletePostClick = async (e: React.UIEvent<HTMLButtonElement>, id: number) => {
     e.stopPropagation()
     const result = await deletePost(id)
     if (result.success) {
@@ -63,7 +64,7 @@ export default function Posts({
   }
 
   const handleUpdatePost = async (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.UIEvent<HTMLButtonElement>,
     id: number,
     title: string,
     content: string,
@@ -81,10 +82,8 @@ export default function Posts({
     }
   }
 
-  const handleOpenModal = (
-    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
-    type: postActions,
-  ) => {
+  const handleOpenModal = (e: React.UIEvent<HTMLButtonElement>, type: postActions) => {
+    e.preventDefault()
     e.stopPropagation()
     setOpenModel(type)
   }
@@ -95,11 +94,19 @@ export default function Posts({
 
   return (
     <>
-      <div
+      <Card
+        tabIndex={0}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            handleRedirect()
+          }
+        }}
         onClick={handleRedirect}
         className={cn(
           'group m-2 flex flex-col items-center gap-5 rounded-lg border p-5',
           'hover:cursor-pointer hover:bg-black hover:text-white',
+          'focus:bg-black focus:text-white focus:outline-none focus:ring-2',
+          'focus:group focus:ring-black focus:ring-offset-2',
         )}>
         <div className="w-full">
           <HeaderTag
@@ -110,26 +117,50 @@ export default function Posts({
           <HeaderTag
             level="h2"
             text={sub_title}
-            className="mb-4 text-base font-medium group-hover:text-white"
+            className={cn(
+              'mb-4 text-base font-medium group-hover:text-white',
+              'group-focus:text-white',
+            )}
           />
-          <time className="mt-2 text-[12px] text-black text-opacity-75 group-hover:text-white">
+          <time
+            className={cn(
+              'mt-2 text-[12px] text-black text-opacity-75',
+              'group-hover:text-white',
+              'group-focus:text-white',
+            )}>
             Created at: {formattedDate}
           </time>
         </div>
         <div className="flex w-full flex-row gap-2">
           <Button
+            aria-label="Delete Post"
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                handleOpenModal(e, 'delete')
+              }
+            }}
             onClick={e => handleOpenModal(e, 'delete')}
-            className="hover:scale-105 group-hover:bg-red-500">
+            className={cn('hover:scale-105 group-hover:bg-red-500', ' group-focus:bg-red-500 ')}>
             Delete
           </Button>
           <Button
+            aria-label="Edit Post"
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                handleOpenModal(e, 'update')
+              }
+            }}
             onClick={e => handleOpenModal(e, 'update')}
             variant={'outline'}
-            className="hover:scale-105 hover:text-white active:scale-105 group-hover:border-black group-hover:bg-blue-500">
+            className={cn(
+              'hover:scale-105 hover:text-white active:scale-105',
+              'group-hover:border-black group-hover:bg-blue-500',
+              'group-focus:border-black group-focus:bg-blue-500',
+            )}>
             <Pencil />
           </Button>
         </div>
-      </div>
+      </Card>
 
       <Dialog open={openModel === 'delete'} onOpenChange={handleCloseModal}>
         <DialogTrigger asChild></DialogTrigger>

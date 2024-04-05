@@ -15,9 +15,17 @@ import HeaderTag from '../ui/header'
 import { Toaster } from '../ui/sonner'
 import { PostSchema } from '@/zodSchemas'
 import FormSkeleton from '../ui/skeletons/formSkeleton'
+import { useEffect, useRef } from 'react'
 
 export default function PostForm() {
   const { isAuthenticated, user } = useAuth()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [])
 
   const form = useForm<z.infer<typeof PostSchema>>({
     resolver: zodResolver(PostSchema),
@@ -73,7 +81,7 @@ export default function PostForm() {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormControl>
+                <FormControl ref={inputRef}>
                   <Input placeholder="Title" {...field} />
                 </FormControl>
                 <FormMessage />
