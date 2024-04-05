@@ -13,6 +13,8 @@ export type Post = {
   sub_title: string
   content: string
   created_at: string
+  category?: string
+  type?: string
   shouldFocus?: boolean
 }
 
@@ -44,11 +46,13 @@ export default async function Page() {
               {data.length === 0 ? (
                 <p className="text-xl font-semibold">You haven&apos;t created any posts yet</p>
               ) : (
-                data.map(({ title, id, content, created_at, sub_title }) => (
+                data.map(({ title, id, content, created_at, sub_title, category, type }) => (
                   <Posts
                     key={id}
                     id={id}
                     content={content}
+                    category={category}
+                    type={type}
                     title={title}
                     sub_title={sub_title}
                     created_at={created_at}

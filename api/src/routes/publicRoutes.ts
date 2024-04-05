@@ -18,7 +18,10 @@ export const sanitizeOptions = {
 // Get all posts
 publicRoutes.get('/posts', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM posts ORDER BY created_at DESC;')
+    const { rows } = await pool.query(
+      'SELECT * FROM posts WHERE type = $1 ORDER BY created_at DESC ',
+      ['public'],
+    )
 
     const processedPosts = rows.map((post: Post) => ({
       ...post,

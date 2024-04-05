@@ -33,13 +33,17 @@ export default function PostForm() {
       title: '',
       sub_title: '',
       content: '',
+      category: '',
+      type: 'public',
     },
   })
 
   const handleSubmit = async (formData: z.infer<typeof PostSchema>) => {
-    const title = formData.title as string
-    const sub_title = formData.sub_title as string
-    const content = formData.content as string
+    const title = formData.title
+    const sub_title = formData.sub_title
+    const category = formData.category
+    const type = formData.type
+    const content = formData.content
     const result = PostSchema.safeParse(formData)
 
     const user_id = user?.id as number
@@ -54,7 +58,7 @@ export default function PostForm() {
     }
 
     if (result.success) {
-      const result = await createPost(title, content, sub_title, user_id)
+      const result = await createPost(title, content, sub_title, category, type, user_id)
       toast.success(result.message, {
         action: {
           label: 'Close',
@@ -66,6 +70,40 @@ export default function PostForm() {
     }
 
     return
+  }
+
+  const handleSaveForLater = async (event: React.MouseEvent) => {
+    event.preventDefault()
+    const formData = form.getValues()
+    const title = formData.title
+    const sub_title = formData.sub_title
+    const category = formData.category
+    const type = 'private'
+    const content = formData.content
+
+    const user_id = user?.id as number
+
+    const result = await createPost(title, content, sub_title, category, type, user_id)
+
+    if (result.success) {
+      toast.success('Post saved successfully', {
+        action: {
+          label: 'Close',
+          onClick: () => {},
+        },
+      })
+    }
+
+    if (!result.success) {
+      toast.error('Something went wrong, Your post was not saved', {
+        action: {
+          label: 'Close',
+          onClick: () => {},
+        },
+      })
+    }
+
+    form.reset()
   }
 
   if (!isAuthenticated) return <FormSkeleton />
@@ -102,6 +140,18 @@ export default function PostForm() {
           />
           <FormField
             control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Category" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="content"
             render={({ field }) => (
               <FormItem>
@@ -117,7 +167,12 @@ export default function PostForm() {
             )}
           />
 
-          <Button className="my-8">Create Post</Button>
+          <Button variant="outline" className="mt-8" onClick={handleSaveForLater}>
+            Save For Later
+          </Button>
+          <Button onClick={() => form.setValue('type', 'public', { shouldValidate: true })}>
+            Create Post
+          </Button>
         </form>
       </Form>
 

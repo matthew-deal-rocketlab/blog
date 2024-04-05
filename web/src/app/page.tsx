@@ -20,8 +20,8 @@ export default async function Page() {
 
   return (
     <Suspense fallback={<BlogSkeleton />}>
-      <Section description="Blog Posts" className="flex flex-col gap-4">
-        <Container width="6xl" className="flex flex-col gap-4">
+      <Section description="Blog Posts" className="flex flex-col gap-4 ">
+        <Container width="[900]" className="flex flex-col gap-4">
           {data.length > 0 && (
             <div className="flex flex-col">
               <HeaderTag level="h1" text="Posts" className="text-3xl font-semibold" />

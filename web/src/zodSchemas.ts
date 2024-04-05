@@ -22,5 +22,7 @@ export const LoginSchema = z.object({
 export const PostSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   sub_title: z.string().min(1, 'Sub Title is required'),
+  type: z.enum(['public', 'private']),
+  category: z.string().min(1, 'Category is required'),
   content: z.string().min(1, 'Content is required'),
 })

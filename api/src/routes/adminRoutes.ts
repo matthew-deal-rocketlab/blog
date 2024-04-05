@@ -11,21 +11,21 @@ export const adminRoutes = Router()
 
 // Create a new post
 adminRoutes.post('/posts', async (req, res) => {
-  const { title, content, sub_title } = req.body
+  const { title, content, sub_title, category, type } = req.body
 
   if (!req.user || !req.user.id) {
     return res.status(403).send('Unauthorized access - user not identified')
   }
   const user_id = req.user.id
 
-  if (!title || !content || !sub_title) {
-    return res.status(400).send('Missing title or content')
+  if (type == null || type === '') {
+    return res.status(400).send('Missing type')
   }
 
   try {
     const { rows } = await pool.query(
-      'INSERT INTO posts (title, content, sub_title, user_id) VALUES ($1, $2, $3, $4) RETURNING *;',
-      [title, content, sub_title, user_id],
+      'INSERT INTO posts (title, content, sub_title, category, type, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;',
+      [title, content, sub_title, category, type, user_id],
     )
 
     const newPost = rows[0]
@@ -68,7 +68,7 @@ adminRoutes.delete('/posts/:id', async (req, res) => {
 // Update a post
 adminRoutes.put('/posts/:id', async (req, res) => {
   const postId = parseInt(req.params.id)
-  const { title, content, sub_title } = req.body
+  const { title, content, sub_title, category, type } = req.body
 
   if (!req.user || !req.user.id) {
     return res.status(403).json('Unauthorized access - user not identified')
@@ -87,8 +87,8 @@ adminRoutes.put('/posts/:id', async (req, res) => {
     }
 
     const { rows } = await pool.query(
-      'UPDATE posts SET title = $1, content = $2, sub_title = $3 WHERE id = $4 RETURNING *;',
-      [title, content, sub_title, postId],
+      'UPDATE posts SET title = $1, content = $2, sub_title = $3, category = $4, type = $5 WHERE id = $6 RETURNING *;',
+      [title, content, sub_title, category, type, postId],
     )
 
     res.json(rows[0])

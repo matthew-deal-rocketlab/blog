@@ -33,6 +33,7 @@ export default function Posts({
   title: initialTitle,
   sub_title,
   content: initialContent,
+  category = '',
   id,
 
   created_at,
@@ -40,6 +41,7 @@ export default function Posts({
   const [updatedTitle, setUpdatedTitle] = useState(initialTitle)
   const [updateSubTitle, setUpdatedSubTitle] = useState(sub_title)
   const [updatedContent, setUpdatedContent] = useState(initialContent)
+  const [updatedCategory, setUpdatedCategory] = useState(category)
   const [openModel, setOpenModel] = useState<postActions>(null)
 
   const { push } = useRouter()
@@ -69,9 +71,10 @@ export default function Posts({
     title: string,
     content: string,
     sub_title: string,
+    category: string,
   ) => {
     e.stopPropagation()
-    const result = await updatePost(id, title, content, sub_title)
+    const result = await updatePost(id, title, content, sub_title, category)
     if (result.success) {
       toast.success(result.message, {
         action: {
@@ -224,6 +227,18 @@ export default function Posts({
                 className="col-span-3"
                 onChange={e => setUpdatedSubTitle(e.target.value)}
               />
+              <Label htmlFor="category" className="text-left">
+                Category
+              </Label>
+              <Input
+                id="category"
+                defaultValue={category}
+                className="col-span-3"
+                onChange={e => setUpdatedCategory(e.target.value)}
+              />
+              <Label htmlFor="type" className="text-left">
+                Type
+              </Label>
             </div>
             <div className="grid grid-cols-1 items-center gap-4">
               <Label htmlFor="content" className="text-left">
@@ -248,7 +263,16 @@ export default function Posts({
 
             <DialogClose asChild>
               <Button
-                onClick={e => handleUpdatePost(e, id, updatedTitle, updatedContent, updateSubTitle)}
+                onClick={e =>
+                  handleUpdatePost(
+                    e,
+                    id,
+                    updatedTitle,
+                    updatedContent,
+                    updateSubTitle,
+                    updatedCategory,
+                  )
+                }
                 type="submit">
                 Save changes
               </Button>

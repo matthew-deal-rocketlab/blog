@@ -16,15 +16,23 @@ export async function createPost(
   title: string,
   content: string,
   sub_title: string,
+  category: string,
+  type: string,
   user_id: number,
 ): Promise<{ success: boolean; message: string }> {
+  console.log(category)
+
   try {
     const response = await UseFetch(`${API_BASE_URL}/posts`, 'POST', {
       title,
       content,
       sub_title,
+      category,
+      type,
       user_id,
     })
+
+    console.log(response)
 
     if (!response.ok) {
       const errorResponse: ErrorResponse = await response.json()
@@ -67,13 +75,20 @@ export async function updatePost(
   title: string,
   content: string,
   sub_title: string,
+  category: string,
 ): Promise<{ success: boolean; message: string }> {
+  console.log(category)
+
   try {
     const response = await UseFetch(`${API_BASE_URL}/posts/${id}`, 'PUT', {
       title,
       content,
       sub_title,
+      category,
+      type: 'public',
     })
+
+    console.log(response)
 
     if (!response.ok) {
       const errorResponse: ErrorResponse = await response.json()

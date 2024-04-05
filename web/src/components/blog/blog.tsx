@@ -1,20 +1,52 @@
 'use client'
 
-import Link from 'next/link'
-import { Button } from '../ui/button'
 import Grid from '../ui/grid'
 import Posts from './posts'
 import { useAuth } from '@/context/authProvider'
 import { Post } from '@/app/admin/page'
-import { Routes } from '@/contstants'
+
 import { Skeleton } from '../ui/skeleton'
+import PostStates from './postStates'
+import { Input } from '../ui/input'
+import { useState } from 'react'
+import { Badge } from '../ui/badge'
+import { useSearchParams } from 'next/navigation'
 
 type AllBlogsProps = {
   data: Post[]
 }
 
+type CategoryCounts = {
+  [key: string]: number
+}
+
 export default function AllBlogs({ data }: AllBlogsProps) {
   const { user, isLoading } = useAuth()
+  const searchParams = useSearchParams()
+  const [searchTerm, setSearchTerm] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
+
+  const handleBadgeClick = (category: string) => {
+    // Toggle category filter on click; if same category clicked, clear the filter
+    if (category === categoryFilter) {
+      setCategoryFilter(null)
+    } else {
+      setCategoryFilter(category)
+    }
+  }
+
+  const filteredData = data.filter(post => {
+    const titleMatch = post.title.toLowerCase().includes(searchTerm.toLowerCase())
+    const categoryMatch = categoryFilter ? post.category === categoryFilter : true
+    return titleMatch && categoryMatch
+  })
+
+  const categoryCounts = data.reduce((acc: CategoryCounts, { category }) => {
+    if (typeof category === 'string') {
+      acc[category] = (acc[category] || 0) + 1
+    }
+    return acc
+  }, {} as CategoryCounts)
 
   if (isLoading)
     return (
@@ -27,22 +59,50 @@ export default function AllBlogs({ data }: AllBlogsProps) {
 
   return (
     <main>
-      {data.length === 0 && user ? (
-        <div className="max-w-3xl text-lg font-medium">
-          <p>
-            <strong>No Posts have been Created.</strong>
-          </p>
-          <p className="mb-8">Create a new post to get started.</p>
-          <Link href={Routes.ADMIN}>
-            <Button>Create a post</Button>
-          </Link>
+      <PostStates data={data} user={user} />
+      <div className="mb-16 flex flex-col gap-5">
+        {filteredData && filteredData.length > 0 && (
+          <Input
+            type="search"
+            placeholder="Search for a post"
+            className=" w-full"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+        )}
+        <div className="flex flex-row flex-wrap gap-5">
+          {Object.entries(categoryCounts).map(([category, count]) => (
+            <Badge
+              tabIndex={0}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  handleBadgeClick(category)
+                }
+              }}
+              onClick={() => handleBadgeClick(category)}
+              variant={'pill'}
+              key={category}
+              className="cursor-pointer bg-black py-2 text-sm text-white">
+              {`${category} ${count}`}
+            </Badge>
+          ))}
+          <Badge
+            tabIndex={0}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                handleBadgeClick('')
+              }
+            }}
+            onClick={() => handleBadgeClick('')}
+            variant={'pill'}
+            className="cursor-pointer bg-black py-2 text-sm text-white">
+            Show All
+          </Badge>
         </div>
-      ) : (
-        'No blog posts available'
-      )}
+      </div>
 
       <Grid cols={4} className="grid-cols-1 md:grid-cols-4">
-        {data.map(({ title, id, content, created_at, sub_title }, index) => (
+        {filteredData.map(({ title, id, content, created_at, sub_title }, index) => (
           <Posts
             shouldFocus={index === 0}
             key={id}

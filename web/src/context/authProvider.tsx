@@ -1,11 +1,11 @@
 'use client'
 
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react'
-import { cookieStoreGet, cookieStoreRemove, cookieStoreSet } from '@/utils/cookie-store'
+import { cookieStoreGet, cookieStoreSet } from '@/utils/cookie-store'
 import jwtDecoder from '@/utils/auth'
 import { KEY_JWT_TOKEN } from '@/contstants'
 
-interface User {
+export interface User {
   id: number
   email: string
 }

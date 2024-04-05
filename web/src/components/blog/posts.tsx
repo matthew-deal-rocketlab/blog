@@ -9,18 +9,9 @@ import { Routes } from '@/contstants'
 
 import HeaderTag from '../ui/header'
 import { Card } from '../ui/card'
-import { useEffect, useRef } from 'react'
 
-export default function Posts({ title, sub_title, id, created_at, shouldFocus }: Post) {
+export default function Posts({ title, sub_title, id, created_at }: Post) {
   const { push } = useRouter()
-
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (shouldFocus && inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [shouldFocus])
 
   const formattedDate = format(parseISO(created_at), "dd/MM/yyyy 'at' ha")
 
@@ -32,7 +23,6 @@ export default function Posts({ title, sub_title, id, created_at, shouldFocus }:
     <>
       <Card
         onClick={handleRedirect}
-        ref={inputRef}
         tabIndex={0}
         onKeyDown={e => {
           if (e.key === 'Enter') {
@@ -45,18 +35,22 @@ export default function Posts({ title, sub_title, id, created_at, shouldFocus }:
           'focus:bg-black focus:text-white focus:outline-none focus:ring-2',
           'focus:group focus:ring-black focus:ring-offset-2',
         )}>
-        <div className="w-full">
-          <HeaderTag
-            level="h2"
-            text={title}
-            className="mt-4 text-xl font-semibold group-hover:text-white"
-          />
-          <HeaderTag
-            level="h3"
-            text={sub_title}
-            className="mb-4 text-base font-medium group-hover:text-white"
-          />
-          <time className="mt-2 text-[12px] text-opacity-75">Created at: {formattedDate}</time>
+        <div className="flex w-full flex-grow flex-col">
+          <div className="flex-grow">
+            <HeaderTag
+              level="h2"
+              text={title}
+              className="mt-4 text-xl font-semibold group-hover:text-white"
+            />
+            <HeaderTag
+              level="h3"
+              text={sub_title}
+              className="mb-4 text-base font-medium group-hover:text-white"
+            />
+          </div>
+          <time className="self-start text-[12px] text-opacity-75">
+            Created at: {formattedDate}
+          </time>
         </div>
       </Card>
     </>
