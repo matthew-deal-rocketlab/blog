@@ -14,11 +14,10 @@ import { useAuth } from '@/context/authProvider'
 import HeaderTag from '../ui/header'
 import { Toaster } from '../ui/sonner'
 import { PostSchema } from '@/zodSchemas'
-import FormSkeleton from '../ui/skeletons/formSkeleton'
 import { useEffect, useRef } from 'react'
 
 export default function PostForm() {
-  const { isAuthenticated, user } = useAuth()
+  const { user } = useAuth()
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -105,8 +104,6 @@ export default function PostForm() {
 
     form.reset()
   }
-
-  if (!isAuthenticated) return <FormSkeleton />
 
   return (
     <>

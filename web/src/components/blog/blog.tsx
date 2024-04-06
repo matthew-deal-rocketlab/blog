@@ -5,12 +5,11 @@ import Posts from './posts'
 import { useAuth } from '@/context/authProvider'
 import { Post } from '@/app/admin/page'
 
-import { Skeleton } from '../ui/skeleton'
 import PostStates from './postStates'
 import { Input } from '../ui/input'
 import { useState } from 'react'
 import { Badge } from '../ui/badge'
-import { useSearchParams } from 'next/navigation'
+import HeaderTag from '../ui/header'
 
 type AllBlogsProps = {
   data: Post[]
@@ -21,13 +20,12 @@ type CategoryCounts = {
 }
 
 export default function AllBlogs({ data }: AllBlogsProps) {
-  const { user, isLoading } = useAuth()
-  const searchParams = useSearchParams()
+  const { user } = useAuth()
+
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
 
   const handleBadgeClick = (category: string) => {
-    // Toggle category filter on click; if same category clicked, clear the filter
     if (category === categoryFilter) {
       setCategoryFilter(null)
     } else {
@@ -48,20 +46,17 @@ export default function AllBlogs({ data }: AllBlogsProps) {
     return acc
   }, {} as CategoryCounts)
 
-  if (isLoading)
-    return (
-      <>
-        <Skeleton className="h-5 w-[230px]" />
-        <Skeleton className="h-5 w-[250px]" />
-        <Skeleton className="mt-5 h-10 w-[100px]" />
-      </>
-    )
-
   return (
     <main>
+      {data.length > 0 && (
+        <div className="flex flex-col">
+          <HeaderTag level="h1" text="Posts" className="text-3xl font-semibold" />
+          <p className="text-sm">number of posts: {data.length}</p>
+        </div>
+      )}
       <PostStates data={data} user={user} />
-      <div className="mb-16 flex flex-col gap-5">
-        {filteredData && filteredData.length > 0 && (
+      <div className="mb-16 mt-4 flex flex-col gap-5">
+        {data && data.length > 0 && (
           <Input
             type="search"
             placeholder="Search for a post"
