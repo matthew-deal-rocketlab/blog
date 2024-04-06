@@ -11,9 +11,7 @@ import HomeSkeleton from '@/components/ui/skeletons/homeSkeleton'
 export default async function Page() {
   const res = await UseFetch(`${API_BASE_URL}/posts`, 'GET', undefined, false, 'no-cache')
 
-  if (!res.ok) {
-    return <p>Failed to load blogs</p>
-  }
+  if (!res.ok) return <p>Failed to load blogs</p>
 
   const data: Post[] = await res.json()
 
