@@ -36,9 +36,9 @@ export default function Nav() {
             <li>
               <NavLink route={Routes.LOGIN} text="Login" />
             </li>
-            <li>
+            {/* <li>
               <NavLink route={Routes.REGISTER} text="Register" />
-            </li>
+            </li> */}
           </>
         )}
       </ul>
