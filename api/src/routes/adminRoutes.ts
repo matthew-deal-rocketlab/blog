@@ -7,6 +7,8 @@ import { Post } from '../types/postTypes'
 
 const pool = require('../db')
 
+console.log(pool)
+
 export const adminRoutes = Router()
 
 // Create a new post
