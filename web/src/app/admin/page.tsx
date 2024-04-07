@@ -38,7 +38,7 @@ export default async function Page() {
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="order-2 md:order-1">
             <HeaderTag
-              text="Your Posts"
+              text="Your Posts "
               level="h1"
               className="mb-4 mt-4 text-3xl font-semibold md:mt-0"
             />
