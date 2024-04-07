@@ -81,18 +81,20 @@ export default function AllBlogs({ data }: AllBlogsProps) {
               {`${category} ${count}`}
             </Badge>
           ))}
-          <Badge
-            tabIndex={0}
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
-                handleBadgeClick('')
-              }
-            }}
-            onClick={() => handleBadgeClick('')}
-            variant={'pill'}
-            className="cursor-pointer bg-black py-2 text-sm text-white">
-            Show All
-          </Badge>
+          {data && data.length > 0 && (
+            <Badge
+              tabIndex={0}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  handleBadgeClick('')
+                }
+              }}
+              onClick={() => handleBadgeClick('')}
+              variant={'pill'}
+              className="cursor-pointer bg-black py-2 text-sm text-white">
+              Show All
+            </Badge>
+          )}
         </div>
       </div>
 
